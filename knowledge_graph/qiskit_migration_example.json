@@ -1,0 +1,80 @@
+[
+    {
+        "from_": "qiskit.utils.QuantumInstance.execute",
+        "to_": "qiskit.primitives.BackendSampler.run",
+        "relationship": "deprecated to",
+        "versions": [
+            "0.44"
+        ],
+        "description": {
+            "0.44": "`BackendSampler` is a wrapper that lets you drive any provider backend through the Sampler interface when no native primitive exists. You pass the backend, may pre-transpile and skip internal compilation, and can supply a **bound** pass manager. Transpiler options (e.g., `seed_transpiler`, `optimization_level`) are set via `set_transpile_options(...)`.\n\n**Old Usage**\n```python\nfrom qiskit.utils import QuantumInstance\nfrom qiskit.providers.fake_provider import FakeBelem\n\nqi = QuantumInstance(backend=FakeBelem(), seed_transpiler=42)\n# qi.execute(circ)\n```\n\n**Runtime V2 (primitives)**\n```python\nfrom qiskit.primitives import BackendSampler\nfrom qiskit.providers.fake_provider import FakeBelem\nfrom qiskit.transpiler import PassManager\n\nbackend = FakeBelem()\npost = PassManager()  # bound pass manager\nsampler = BackendSampler(backend=backend, skip_transpilation=True,\n                         bound_pass_manager=post)\nsampler.set_transpile_options(optimization_level=1, seed_transpiler=42)\njob = sampler.run([tr_circ], shots=1000)\nqd = job.result().quasi_dists\n```\n\n**What to set & where (Backend Sampler)**\n- **backend** → constructor `BackendSampler(backend=...)`.\n- **transpiler settings** → `set_transpile_options(...)`.\n- **bound pass manager** → constructor `bound_pass_manager=...`.\n- **skip internal transpilation** → `skip_transpilation=True` when you supply transpiled circuits.\n(Backed by BackendSampler API.)"
+        }
+    },
+    {
+        "from_": "qiskit_ibm_provider.IBMProvider.save_account",
+        "to_": "qiskit_ibm_runtime.QiskitRuntimeService.save_account",
+        "relationship": "deprecated to",
+        "versions": [
+            "0.46"
+        ],
+        "description": {
+            "0.46": "### Old Usage\n```python\n# Save IBM Quantum account credentials using the legacy provider\nfrom qiskit_ibm_provider import IBMProvider\n\nIBMProvider.save_account(token=\"<MY_API_TOKEN>\")\n```\n\n### Runtime V2 (primitives)\n```python\n# Save Runtime credentials with channel/instance, set default, and name profiles\nfrom qiskit_ibm_runtime import QiskitRuntimeService\n\nQiskitRuntimeService.save_account(\n    channel=\"ibm_quantum_platform\",\n    token=\"<API_TOKEN>\",\n    overwrite=True,\n    set_as_default=True,\n)\n\n# Optional: named credentials and per-name loading\nQiskitRuntimeService.save_account(channel=\"ibm_quantum_platform\", token=\"<API_TOKEN>\", instance=\"<CRN for premium>\", name=\"premium\")\nQiskitRuntimeService.save_account(channel=\"ibm_quantum_platform\", token=\"<API_TOKEN>\", instance=\"<CRN for open>\", name=\"open\")\nservice = QiskitRuntimeService(name=\"open\")\n```\nUse `QiskitRuntimeService.save_account` to store credentials, specifying the `channel`, optional `instance` (CRN), and an optional `name` for multiple profiles. You can then load by `name`. This replaces saving via `IBMProvider.save_account`."
+        }
+    },
+    {
+        "from_": "qiskit_ibm_runtime.Sampler",
+        "to_": "qiskit_ibm_runtime.SamplerV2",
+        "relationship": "replaced by",
+        "versions": [
+            "0.21.0",
+            "0.23.0"
+        ],
+        "description": {
+            "0.21.0": "Sampler V1 is superseded by **SamplerV2**. V2 requires **ISA-ready** circuits (transpile first), takes **PUBs** as input, adds **shots** to `run()`, and returns **per-shot bitstrings** grouped by **classical-register name** in each PUB result. Use helpers like `get_counts()` on a specific register, or `join_data().get_counts()` to merge across registers.\n\n**Important result-layout note:** results are organized by the **classical register names** in your circuit (for example `meas`, `c`, or a custom name). By default, `measure_all()` adds a new classical register (commonly accessed as `data.meas`). If you create registers manually, their **names** determine where to read counts (e.g., `data.c`, `data.classical`). When multiple registers exist or you don’t want to reason about names, call `pub_result.join_data().get_counts()` to combine them.\n\n### Old Usage\n```python\n# V1 (quasi-probabilities, no register-based data access)\nfrom qiskit_ibm_runtime import Sampler\njob = Sampler(backend).run([circuit])\nqpd = job.result().quasi_dists\n```\n\n### New Usage\n```python\n# V2 (ISA circuits, shots, register-based results)\nfrom qiskit_ibm_runtime import SamplerV2 as Sampler\nfrom qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager\n\npm  = generate_preset_pass_manager(backend, optimization_level=1)\nisa = pm.run(circuit)                     # make ISA-ready circuit\njob = Sampler(backend).run([(isa, None, 1024)])\npub_result = job.result()[0]\n# Access by register name (see examples below) or merge with join_data()\ncounts = pub_result.join_data().get_counts() # Make sure the circuit is measured else this will fail.\n```\n**Register-name examples (how to read counts):**\n\nCase 1 (implicit 2-bit ClassicalRegister named `c`):\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(2, 2)\nqc.measure([0, 1], [0, 1])\n# ... run SamplerV2 to get pub_result\ncounts = pub_result.data.c.get_counts()  # Make sure the circuit is measured else this will fail.\n```\n\nCase 2 (explicit qreg/creg, default ClassicalRegister name is `c`):\n```python\nfrom qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister\nqreg = QuantumRegister(2)\ncreg = ClassicalRegister(2)   # default name -> 'c'\nqc = QuantumCircuit(qreg, creg)\nqc.measure(qreg, creg)\n# ...\ncounts = pub_result.data.c.get_counts()  # Make sure the circuit is measured else this will fail.\n```\n\nCase 3 (custom ClassicalRegister name):\n```python\nfrom qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister\nqreg = QuantumRegister(2)\ncreg = ClassicalRegister(2, 'classical')  # custom name\nqc = QuantumCircuit(qreg, creg)\nqc.measure(qreg, creg)\n# ...\ncounts = pub_result.data.classical.get_counts()  # Make sure the circuit is measured else this will fail.\n```\n\nCase 4 (`measure_all()` adds a register typically accessed as `meas`):\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.measure_all()\n# ...\ncounts = pub_result.data.meas.get_counts()\n```\n\nCase 5 (multiple registers present → merge):\n```python\n# If your circuit ends up with multiple registers (e.g., an initial 'c' plus\n# an added 'meas' from measure_all), merge first:\ncounts = pub_result.join_data().get_counts()\n```\nThis register-oriented result layout is by design for dynamic-circuit compatibility; use your circuit’s `qc.cregs` to inspect register names when needed."
+        }
+    },
+    {
+        "from_": "qiskit.providers.BackendV2.control_channel",
+        "to_": "None",
+        "relationship": "deprecated to",
+        "versions": [
+            "2.0"
+        ],
+        "description": {
+            "2.0": "`BackendV2.control_channel` was removed. Channel-based Pulse access is not available in Qiskit 2.0."
+        }
+    },
+    {
+        "from_": "qiskit.providers.BackendV1.run",
+        "to_": "qiskit_ibm_runtime.EstimatorV2",
+        "relationship": "replaced by",
+        "versions": [
+            "1.0"
+        ],
+        "description": {
+            "1.0": "If you previously computed **expectation values** by post-processing `backend.run()` counts, switch to **Qiskit Runtime `EstimatorV2`**. Submit PUBs `(circuit, observables, parameter_values?, precision?)`, and optionally request a target precision. Use an ISA-transpiled circuit and map observables to the layout. \n\n### Old Usage\n```python\n# Schematic: counts -> manual ⟨H⟩\nfrom qiskit import transpile\nfrom qiskit.quantum_info import SparsePauliOp\nisa = transpile(ansatz, backend)\njob = backend.run(isa, shots=4000)\ncounts = job.result().get_counts()\n# ... manual reduction to estimate <H>\n```\n\n### New Usage\n```python\nimport numpy as np\nfrom qiskit.quantum_info import SparsePauliOp\nfrom qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager\nfrom qiskit_ibm_runtime import QiskitRuntimeService, EstimatorV2 as Estimator\n\nservice = QiskitRuntimeService()\nbackend = service.backend(\"ibm_brisbane\")\npm = generate_preset_pass_manager(backend=backend, optimization_level=1)\nisa = pm.run(ansatz)\n\nH = SparsePauliOp.from_list([(\"ZI\", 1.0), (\"IZ\", 1.0)])\nH_isa = H.apply_layout(isa.layout)\n\nest = Estimator(mode=backend)\njob = est.run([(isa, H_isa, [np.zeros(isa.num_parameters)])], precision=0.01)\nev = job.result()[0].data.evs\n```\nUse `EstimatorV2` for ⟨ψ|H|ψ⟩ with vectorized sweeps and optional precision targeting; see the end-to-end migration examples. "
+        }
+    },
+    {
+        "from_": "qiskit.compiler.transpile",
+        "to_": "qiskit.transpiler.preset_passmanagers.generate_preset_pass_manager",
+        "relationship": "migrated to",
+        "versions": [
+            "1.0"
+        ],
+        "description": {
+            "1.0": "The recommended v1/v2 workflow is to build a **preset pass manager** and call `.run()` to produce ISA-compatible circuits. `transpile()` still exists, but the guides emphasize `generate_preset_pass_manager(...)` for clarity and repeatability in migration examples. \n\n### Old Usage\n```python\nfrom qiskit.compiler import transpile\nisa = transpile(qc, backend)\n```\n\n### New Usage\n```python\nfrom qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager\npm = generate_preset_pass_manager(backend=backend, optimization_level=1)\nisa = pm.run(qc)\n```\nThis aligns with Runtime V2 guidance where primitives expect ISA circuits derived from the backend’s `Target`. "
+        }
+    },
+    {
+        "from_": "qiskit.algorithms",
+        "to_": "qiskit_algorithms",
+        "relationship": "migrated to",
+        "versions": [
+            "0.44"
+        ],
+        "description": {
+            "0.44": "The introduction states that the entire qiskit.algorithms module moved into a new standalone library, qiskit_algorithms, and users must update imports after installing qiskit-algorithms. This is the top-level package move that applies to all algorithms in the module.\n\nLegacy\n```python\n# Algorithms lived under qiskit.algorithms\nfrom qiskit.algorithms import VQE, QAOA\n# ... use primitives or QuantumInstance in older code ...\n```\n\nNew Usage\n```python\n# Install & import from the new package\n# pip install qiskit-algorithms\nfrom qiskit_algorithms import VQE, QAOA\n# supply primitives (e.g., Estimator/Sampler) to new algorithms\n```"
+        }
+    }
+]

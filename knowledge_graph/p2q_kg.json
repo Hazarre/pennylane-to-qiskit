@@ -1,0 +1,186 @@
+{
+	"nodes": [
+		{
+			"id": "qml.RX",
+			"name": "qml.RX",
+			"type": "class",
+			"description": "The single qubit X rotation gate in PennyLane. Applies a rotation around the X-axis of the Bloch sphere with matrix R_x(φ) = e^(-iφσ_x/2). Takes a rotation angle φ parameter and acts on a single wire."
+		},
+		{
+			"id": "qiskit.circuit.QuantumCircuit.rx",
+			"name": "qiskit.circuit.QuantumCircuit.rx",
+			"type": "function",
+			"description": "Method on QuantumCircuit class that adds an RX gate to the circuit. Applies a rotation around the X-axis of the Bloch sphere. Takes rotation angle and target qubit as parameters."
+		},
+		{
+			"id": "qml.device(\"default.qubit\")",
+			"name": "qml.device(\"default.qubit\")",
+			"type": "function",
+			"description": "PennyLane device factory function that creates a default quantum simulator using statevector simulation. Supports both finite shots and exact statevector calculations for quantum circuit simulation."
+		},
+		{
+			"id": "qiskit_aer.AerSimulator",
+			"name": "qiskit_aer.AerSimulator",
+			"type": "class",
+			"description": "Qiskit Aer's configurable quantum circuit simulator backend. Supports multiple simulation methods including statevector, density matrix, stabilizer, and matrix product state simulations with noise modeling capabilities."
+		},
+		{
+			"id": "qml.counts",
+			"name": "qml.counts",
+			"type": "function",
+			"description": "PennyLane measurement function that returns shot-based measurement statistics as a dictionary mapping computational basis states to their occurrence counts."
+		},
+		{
+			"id": "qiskit.result.Result.get_counts",
+			"name": "qiskit.result.Result.get_counts",
+			"type": "function",
+			"description": "Method on Qiskit Result objects that extracts measurement count statistics from circuit execution results. Returns a dictionary mapping bitstring outcomes to occurrence frequencies."
+		},
+		{
+			"id": "qml.NoiseModel",
+			"name": "qml.NoiseModel",
+			"type": "class",
+			"description": "PennyLane noise modeling class that defines conditional noise insertion rules for realistic quantum device simulation. Uses BooleanFn predicates to determine when to apply specific noise channels."
+		},
+		{
+			"id": "qiskit_aer.noise.NoiseModel",
+			"name": "qiskit_aer.noise.NoiseModel",
+			"type": "class",
+			"description": "Qiskit Aer noise modeling class for realistic quantum device simulation. Allows gate-specific error mappings and supports various noise channels including depolarizing, amplitude damping, and phase damping errors."
+		},
+		{
+			"id": "qml.device(\"qiskit.remote\")",
+			"name": "qml.device(\"qiskit.remote\")",
+			"type": "function",
+			"description": "PennyLane device factory function that creates a device interface for executing circuits on remote IBM Quantum hardware through the PennyLane framework using Qiskit Runtime services."
+		},
+		{
+			"id": "qiskit_ibm_runtime.EstimatorV2",
+			"name": "qiskit_ibm_runtime.EstimatorV2",
+			"type": "class",
+			"description": "Qiskit Runtime primitive for computing expectation values of observables on quantum circuits. Supports execution on IBM Quantum hardware and simulators with ISA-level circuit requirements."
+		},
+		{
+			"id": "qml.GradientDescentOptimizer",
+			"name": "qml.GradientDescentOptimizer",
+			"type": "class",
+			"description": "PennyLane gradient-based optimizer for variational quantum algorithms. Uses analytic gradients via parameter-shift rule for optimization of parameterized quantum circuits."
+		},
+		{
+			"id": "qiskit_algorithms.optimizers.GradientDescent",
+			"name": "qiskit_algorithms.optimizers.GradientDescent",
+			"type": "class",
+			"description": "Qiskit gradient-based optimizer for variational quantum algorithms. Typically uses finite differences for gradient computation and provides interface for minimizing objective functions."
+		},
+		{
+			"id": "qml.Hadamard",
+			"name": "qml.Hadamard",
+			"type": "class",
+			"description": "PennyLane Hadamard gate operation that creates superposition by rotating a qubit state around the X+Z axis. Transforms |0⟩ → (|0⟩ + |1⟩)/√2 and |1⟩ → (|0⟩ - |1⟩)/√2."
+		},
+		{
+			"id": "qiskit.circuit.QuantumCircuit.h",
+			"name": "qiskit.circuit.QuantumCircuit.h",
+			"type": "function",
+			"description": "Method on QuantumCircuit class that adds a Hadamard gate to the circuit. Creates equal superposition from computational basis states."
+		},
+		{
+			"id": "qml.CNOT",
+			"name": "qml.CNOT",
+			"type": "class",
+			"description": "PennyLane controlled-NOT gate operation. Two-qubit gate that flips the target qubit if the control qubit is in state |1⟩. Essential for creating entangled states."
+		},
+		{
+			"id": "qiskit.circuit.QuantumCircuit.cx",
+			"name": "qiskit.circuit.QuantumCircuit.cx",
+			"type": "function",
+			"description": "Method on QuantumCircuit class that adds a controlled-X (CNOT) gate to the circuit. Implements the controlled-NOT operation between control and target qubits."
+		},
+		{
+			"id": "qml.expval",
+			"name": "qml.expval",
+			"type": "function",
+			"description": "PennyLane measurement function that computes expectation values of observables on quantum states. Returns ⟨ψ|H|ψ⟩ for observable H and state |ψ⟩."
+		},
+		{
+			"id": "qiskit_aer.primitives.EstimatorV2",
+			"name": "qiskit_aer.primitives.EstimatorV2",
+			"type": "class",
+			"description": "Qiskit Aer implementation of the EstimatorV2 primitive for computing expectation values on simulated quantum circuits. Designed for variational algorithms and quantum machine learning."
+		}
+	],
+	"edges": [
+		{
+			"from_": "qml.RX",
+			"to_": "qiskit.circuit.QuantumCircuit.rx",
+			"relationship": "convert to",
+			"description": {
+				"latest": "The PennyLane RX gate applies a rotation around the X-axis of the Bloch sphere. In Qiskit, this translates to the `rx()` method on a QuantumCircuit, which adds an RX gate to the circuit.\n\n**PennyLane Usage**\n```python\nimport pennylane as qml\n\ntape = qml.tape.QuantumTape()\nwith tape:\n    qml.RX(theta, wires=0)\n    qml.measure(0)\n```\n\n**Qiskit Equivalent**\n```python\nfrom qiskit import QuantumCircuit\n\nqc = QuantumCircuit(1)\nqc.rx(theta, 0)\nqc.measure_all()\n```\n\nBoth perform the same X-axis rotation operation on a qubit, with the angle parameter `theta` specifying the rotation amount in radians."
+			}
+		},
+		{
+			"from_": "qml.device(\"default.qubit\")",
+			"to_": "qiskit_aer.AerSimulator",
+			"relationship": "convert to",
+			"description": {
+				"latest": "PennyLane's `default.qubit` device provides a statevector simulator for quantum circuits. The Qiskit equivalent is `AerSimulator`, which offers multiple simulation methods including statevector simulation.\n\n**PennyLane Usage**\n```python\nimport pennylane as qml\n\ndev = qml.device(\"default.qubit\", wires=3, shots=2000)\n```\n\n**Qiskit Equivalent**\n```python\nfrom qiskit_aer import AerSimulator\n\nsim = AerSimulator(shots=2000)\n```\n\nBoth provide quantum circuit simulation capabilities. AerSimulator supports additional simulation methods like density matrix, stabilizer, and matrix product state simulations beyond the basic statevector approach."
+			}
+		},
+		{
+			"from_": "qml.counts",
+			"to_": "qiskit.result.Result.get_counts",
+			"relationship": "convert to",
+			"description": {
+				"latest": "PennyLane's `qml.counts()` measurement returns shot-based measurement statistics as a dictionary of bitstrings to counts. In Qiskit, this is achieved by running a circuit with measurements and calling `get_counts()` on the result.\n\n**PennyLane Usage**\n```python\n@qml.qnode(dev)\ndef circuit():\n    qml.Hadamard(0)\n    qml.CNOT(wires=[0, 1])\n    return qml.counts(wires=[0, 1])\n\ncounts = circuit()\n```\n\n**Qiskit Equivalent**\n```python\nqc = QuantumCircuit(2)\nqc.h(0)\nqc.cx(0, 1)\nqc.measure_all()\n\nresult = sim.run(qc).result()\ncounts = result.get_counts()\n```\n\nBoth return measurement outcome frequencies as dictionaries mapping bitstring outcomes to their occurrence counts."
+			}
+		},
+		{
+			"from_": "qml.NoiseModel",
+			"to_": "qiskit_aer.noise.NoiseModel",
+			"relationship": "convert to",
+			"description": {
+				"latest": "Both frameworks provide noise modeling capabilities for realistic quantum device simulation. PennyLane uses `qml.NoiseModel` with conditional functions, while Qiskit uses `qiskit_aer.noise.NoiseModel` with gate-specific error mappings.\n\n**PennyLane Usage**\n```python\nimport pennylane as qml\n\n@qml.BooleanFn\ndef is_two_qubit_gate(op, **metadata):\n    return len(op.wires) == 2\n\ndef two_qubit_depol(op, **metadata):\n    for w in op.wires:\n        qml.DepolarizingChannel(prob_depol, wires=w)\n\nnoise_model = qml.NoiseModel({is_two_qubit_gate: two_qubit_depol})\nnoisy_dev = qml.add_noise(base_dev, noise_model)\n```\n\n**Qiskit Equivalent**\n```python\nfrom qiskit_aer.noise import NoiseModel, errors\n\nnoise_model = NoiseModel()\ntwo_qubit_gates = [\"cx\", \"cz\", \"swap\"]\ntwoq_error = errors.depolarizing_error(prob_depol, 2)\nnoise_model.add_all_qubit_quantum_error(twoq_error, two_qubit_gates)\n\nsim = AerSimulator(noise_model=noise_model)\n```\n\nBoth enable realistic simulation by adding noise channels that model decoherence and gate errors on quantum hardware."
+			}
+		},
+		{
+			"from_": "qml.device(\"qiskit.remote\")",
+			"to_": "qiskit_ibm_runtime.EstimatorV2",
+			"relationship": "convert to",
+			"description": {
+				"latest": "PennyLane's `qiskit.remote` device enables execution on IBM Quantum hardware through the PennyLane interface. In native Qiskit, this is achieved using `EstimatorV2` from the IBM Runtime service for expectation value calculations.\n\n**PennyLane Usage**\n```python\nfrom qiskit_ibm_runtime import QiskitRuntimeService\n\nservice = QiskitRuntimeService()\nbackend = service.backend(\"ibm_sherbrooke\")\ndev = qml.device(\"qiskit.remote\", wires=backend.num_qubits, backend=backend)\n\n@qml.qnode(dev)\ndef circuit():\n    qml.Hadamard(0)\n    qml.CNOT(wires=[0, 1])\n    return qml.expval(qml.PauliZ(1))\n```\n\n**Qiskit Equivalent**\n```python\nfrom qiskit_ibm_runtime import EstimatorV2\nfrom qiskit.quantum_info import SparsePauliOp\nfrom qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager\n\nqc = QuantumCircuit(2)\nqc.h(0)\nqc.cx(0, 1)\n\nobs = SparsePauliOp.from_list([(\"ZI\", 1.0)])\npm = generate_preset_pass_manager(backend=backend, optimization_level=3)\nisa_circuit = pm.run(qc)\nisa_observable = obs.apply_layout(isa_circuit.layout)\n\nestimator = EstimatorV2(mode=backend)\njob = estimator.run([(isa_circuit, isa_observable)])\nresult = job.result()[0]\n```\n\nBoth enable execution on real IBM Quantum hardware, with EstimatorV2 being the native Qiskit Runtime approach for expectation value measurements."
+			}
+		},
+		{
+			"from_": "qml.GradientDescentOptimizer",
+			"to_": "qiskit_algorithms.optimizers.GradientDescent",
+			"relationship": "convert to",
+			"description": {
+				"latest": "Both frameworks provide gradient-based optimization for variational quantum algorithms. PennyLane's `GradientDescentOptimizer` uses analytic gradients (parameter-shift rule), while Qiskit's `GradientDescent` typically uses finite differences by default.\n\n**PennyLane Usage**\n```python\nimport pennylane as qml\nfrom pennylane import numpy as pnp\n\nopt = qml.GradientDescentOptimizer(stepsize=0.1)\nparams = pnp.array([0.5], requires_grad=True)\n\nfor i in range(20):\n    params = opt.step(circuit, params)\n```\n\n**Qiskit Equivalent**\n```python\nfrom qiskit_algorithms.optimizers import GradientDescent\nimport numpy as np\n\ndef cost_function(x):\n    # Compute expectation value using EstimatorV2\n    return float(expectation_value)\n\nopt = GradientDescent(maxiter=20, learning_rate=0.1)\nresult = opt.minimize(fun=cost_function, x0=initial_point)\n```\n\nBoth enable optimization of parameterized quantum circuits, with differences in gradient computation methods and interface styles."
+			}
+		},
+		{
+			"from_": "qml.Hadamard",
+			"to_": "qiskit.circuit.QuantumCircuit.h",
+			"relationship": "convert to",
+			"description": {
+				"latest": "The Hadamard gate creates superposition by rotating a qubit state around the X+Z axis. Both PennyLane and Qiskit provide this fundamental quantum gate.\n\n**PennyLane Usage**\n```python\nimport pennylane as qml\n\nwith tape:\n    qml.Hadamard(wires=0)\n```\n\n**Qiskit Equivalent**\n```python\nfrom qiskit import QuantumCircuit\n\nqc = QuantumCircuit(1)\nqc.h(0)\n```\n\nBoth apply the Hadamard transformation |0⟩ → (|0⟩ + |1⟩)/√2 and |1⟩ → (|0⟩ - |1⟩)/√2, creating equal superposition from computational basis states."
+			}
+		},
+		{
+			"from_": "qml.CNOT",
+			"to_": "qiskit.circuit.QuantumCircuit.cx",
+			"relationship": "convert to",
+			"description": {
+				"latest": "The controlled-NOT (CNOT) gate is a two-qubit gate that flips the target qubit if the control qubit is in state |1⟩. Both frameworks provide this essential entangling gate.\n\n**PennyLane Usage**\n```python\nimport pennylane as qml\n\nwith tape:\n    qml.CNOT(wires=[0, 1])  # control=0, target=1\n```\n\n**Qiskit Equivalent**\n```python\nfrom qiskit import QuantumCircuit\n\nqc = QuantumCircuit(2)\nqc.cx(0, 1)  # control=0, target=1\n```\n\nBoth implement the CNOT operation: |00⟩ → |00⟩, |01⟩ → |01⟩, |10⟩ → |11⟩, |11⟩ → |10⟩, enabling creation of entangled states."
+			}
+		},
+		{
+			"from_": "qml.expval",
+			"to_": "qiskit_aer.primitives.EstimatorV2",
+			"relationship": "convert to",
+			"description": {
+				"latest": "PennyLane's `qml.expval()` computes expectation values of observables on quantum states. In Qiskit, this is achieved using the `EstimatorV2` primitive, which is designed specifically for expectation value calculations.\n\n**PennyLane Usage**\n```python\nimport pennylane as qml\n\n@qml.qnode(dev)\ndef circuit(params):\n    qml.RY(params[0], wires=0)\n    qml.CNOT(wires=[0, 1])\n    return qml.expval(qml.PauliZ(1))\n```\n\n**Qiskit Equivalent**\n```python\nfrom qiskit import QuantumCircuit\nfrom qiskit.quantum_info import SparsePauliOp\nfrom qiskit_aer.primitives import EstimatorV2\n\nqc = QuantumCircuit(2)\ntheta = Parameter('theta')\nqc.ry(theta, 0)\nqc.cx(0, 1)\n\nobs = SparsePauliOp.from_list([(\"ZI\", 1.0)])\nest = EstimatorV2()\njob = est.run([(qc, obs, [[param_value]])])\nexpval = job.result()[0].data.evs\n```\n\nBoth compute expectation values ⟨ψ|H|ψ⟩ of observables, essential for variational quantum algorithms and quantum machine learning."
+			}
+		}
+	]
+}
