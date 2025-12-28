@@ -7,8 +7,9 @@ import re
 import subprocess
 import tempfile
 import os
+from langchain_google_genai import ChatGoogleGenerativeAI
 
-def create_coding_assistant(system_prompt: str, model: str = "mistral:7b"):
+def create_coding_assistant(system_prompt: str, model: str = "mistral:7b", use_local_model = False):
 	"""
 	Create a coding assistant using Ollama and LangChain.
 	
@@ -19,7 +20,10 @@ def create_coding_assistant(system_prompt: str, model: str = "mistral:7b"):
 	Returns:
 		A callable assistant function
 	"""
-	llm = ChatOllama(model=model, temperature=0.1)
+	if use_local_model:
+		llm = ChatOllama(model=model, temperature=0.1)
+	else:
+		llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key="xxx", temperature=0.1)
 	
 	prompt_template = PromptTemplate(
 		input_variables=["system_prompt", "user_input"],
@@ -178,14 +182,52 @@ def main():
 		validation_response = assistant(validation_prompt)
 		print(f"\nValidation Response:\n{validation_response}\n")
 		
-		# Check if the attempt was successful
-		if "<success>YES</success>" in validation_response:
-			print("✅ Conversion successful!")
-			break
-		elif attempt == max_attempts:
-			print(f"❌ All {max_attempts} attempts completed without success.")
+		# Extract content from <final_answer> tag if it exists
+		final_answer_match = re.search(r'<final_answer>(.*?)</final_answer>', validation_response, re.DOTALL)
+		
+		if final_answer_match:
+			final_answer_content = final_answer_match.group(1).lower()
+			
+			# Check for both "success" and "fail" keywords in final_answer
+			has_success = "success" in final_answer_content
+			has_fail = "fail" in final_answer_content
+			
+			if has_success and has_fail:
+				print("❌ Error: LLM response contains conflicting success/failure indicators in <final_answer>.")
+				print("Unable to determine whether the conversion succeeded or failed.")
+				if attempt == max_attempts:
+					print(f"❌ All {max_attempts} attempts completed with ambiguous results.")
+				else:
+					print(f"⚠️ Attempt {attempt} has ambiguous results, trying again...")
+				continue
+			elif has_success:
+				print("✅ Conversion successful!")
+				break
+			elif has_fail:
+				print(f"❌ Conversion failed on attempt {attempt}.")
+				if attempt == max_attempts:
+					print(f"❌ All {max_attempts} attempts completed without success.")
+				else:
+					print(f"⚠️ Attempt {attempt} failed, trying again...")
+			else:
+				# Fallback to original logic if no clear success/fail indicators
+				print("⚠️ No clear success/failure indicators found in <final_answer>.")
+				if "<success>YES</success>" in validation_response:
+					print("✅ Conversion successful!")
+					break
+				elif attempt == max_attempts:
+					print(f"❌ All {max_attempts} attempts completed without success.")
+				else:
+					print(f"⚠️ Attempt {attempt} failed, trying again...")
 		else:
-			print(f"⚠️ Attempt {attempt} failed, trying again...")
+			# No <final_answer> tag found, use original logic
+			if "<success>YES</success>" in validation_response:
+				print("✅ Conversion successful!")
+				break
+			elif attempt == max_attempts:
+				print(f"❌ All {max_attempts} attempts completed without success.")
+			else:
+				print(f"⚠️ Attempt {attempt} failed, trying again...")
 
 
 if __name__ == "__main__":

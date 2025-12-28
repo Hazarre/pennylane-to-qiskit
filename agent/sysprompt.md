@@ -69,7 +69,7 @@ Assess whether the conversion is successful based on the execution results. If n
 If this is your final attempt or if successful, provide:
 
 <final_answer>
-<success>YES or NO</success>
+<status>SUCCESS or FAILURE</status>
 <qiskit_program>
 The final converted Qiskit program (only if successful)
 </qiskit_program>
@@ -77,5 +77,7 @@ The final converted Qiskit program (only if successful)
 A summary of the conversion process, key mappings used, and any important notes about differences between the PennyLane and Qiskit implementations.
 </explanation>
 </final_answer>
+
+**IMPORTANT**: Always include `<status>SUCCESS/FAILURE</status>` tags in your final answer to clearly indicate the outcome.
 
 If you cannot successfully convert the program after 3 attempts, explain in your final answer what the blocking issues are and what additional information or mappings would be needed.
